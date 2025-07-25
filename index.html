@@ -8,15 +8,12 @@
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background: #f5f5f5;
+      margin: 0;
       padding: 20px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
     }
     .container {
       max-width: 500px;
       margin: auto;
-      flex-grow: 1;
     }
     h2 {
       text-align: center;
@@ -32,21 +29,16 @@
     label {
       display: block;
       margin-top: 12px;
-      font-weight: 600;
+      font-weight: bold;
       color: #555;
     }
-    input[type=number] {
+    input {
       width: 100%;
       padding: 10px;
       font-size: 16px;
       margin-top: 5px;
       border-radius: 6px;
       border: 1px solid #ccc;
-    }
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
     }
     .line {
       display: flex;
@@ -64,10 +56,10 @@
       color: #222;
     }
     button {
-      margin-top: 20px;
+      margin-top: 15px;
       width: 100%;
       padding: 12px;
-      background: #ff5722;
+      background: #2196f3;
       color: white;
       border: none;
       border-radius: 6px;
@@ -75,18 +67,13 @@
       cursor: pointer;
     }
     button.reset {
-      background: #9e9e9e;
-    }
-    hr {
-      margin: 15px 0;
-      border: 0;
-      border-top: 1px solid #ddd;
+      background: #f44336;
     }
     footer {
       text-align: center;
-      margin-top: 30px;
       font-size: 14px;
-      color: #888;
+      margin-top: 30px;
+      color: #777;
     }
   </style>
 </head>
@@ -95,46 +82,45 @@
     <h2>Kalkulator Biaya Shopee Seller</h2>
 
     <div class="card">
-      <form id="form-kalkulator" onsubmit="hitung(); return false;">
-        <label>Harga Produk (Rp):</label>
-        <input type="number" id="harga" inputmode="numeric" pattern="[0-9]*" required>
+      <label>Harga Produk (Rp):</label>
+      <input type="number" id="harga" inputmode="decimal" pattern="[0-9]*" value="10000">
 
-        <label>Diskon Penjual (Rp):</label>
-        <input type="number" id="diskon" inputmode="numeric" pattern="[0-9]*" value="0">
+      <label>Diskon Penjual (Rp):</label>
+      <input type="number" id="diskon" inputmode="decimal" pattern="[0-9]*" value="0">
 
-        <label>Voucher Penjual (Rp):</label>
-        <input type="number" id="voucher" inputmode="numeric" pattern="[0-9]*" value="0">
+      <label>Voucher Penjual (Rp):</label>
+      <input type="number" id="voucher" inputmode="decimal" pattern="[0-9]*" value="0">
 
-        <label>Biaya Admin (%):</label>
-        <input type="number" id="admin_fee" inputmode="decimal" step="0.1" value="1.5" required>
+      <label>Biaya Admin (%):</label>
+      <input type="number" id="admin_fee" inputmode="decimal" pattern="[0-9]*" value="1.5" step="0.1">
 
-        <label>Biaya Ongkir Xtra (%):</label>
-        <input type="number" id="ongkir_fee" inputmode="decimal" step="0.1" value="5">
+      <label>Biaya Ongkir Xtra (%):</label>
+      <input type="number" id="ongkir_fee" inputmode="decimal" pattern="[0-9]*" value="5" step="0.1">
 
-        <label>Biaya Promo Xtra (%):</label>
-        <input type="number" id="promo_fee" inputmode="decimal" step="0.1" value="2">
+      <label>Biaya Promo Xtra (%):</label>
+      <input type="number" id="promo_fee" inputmode="decimal" pattern="[0-9]*" value="2" step="0.1">
 
-        <button type="submit">Hitung</button>
-        <button type="button" class="reset" onclick="resetForm()">Reset</button>
-      </form>
+      <label>Biaya Penanganan (Rp):</label>
+      <input type="number" id="penanganan_fee" inputmode="decimal" pattern="[0-9]*" value="1000">
+
+      <button onclick="hitung()">🔢 Hitung</button>
+      <button class="reset" onclick="resetForm()">🔄 Reset</button>
     </div>
 
-    <div class="card summary" id="ringkasan" style="display:none;">
+    <div class="card summary">
       <h3>Ringkasan Biaya</h3>
       <div class="line"><span>Harga Produk Final:</span><strong id="harga_final">Rp 0</strong></div>
       <div class="line"><span>Biaya Admin:</span><strong id="admin_total">Rp 0</strong></div>
-      <div class="line"><span>Biaya Admin (%):</span><strong id="admin_percent">0%</strong></div>
       <div class="line"><span>Biaya Ongkir Xtra:</span><strong id="ongkir_total">Rp 0</strong></div>
       <div class="line"><span>Biaya Promo Xtra:</span><strong id="promo_total">Rp 0</strong></div>
+      <div class="line"><span>Biaya Penanganan:</span><strong id="penanganan_total">Rp 0</strong></div>
       <hr>
       <div class="line"><span><strong>Total Biaya:</strong></span><strong id="total_biaya">Rp 0</strong></div>
       <div class="line"><span><strong>Pendapatan Bersih:</strong></span><strong id="bersih" style="color:green;">Rp 0</strong></div>
     </div>
-  </div>
 
-  <footer>
-    Powered by <strong>In God We Trust</strong>
-  </footer>
+    <footer>Powered by <strong>In God We Trust</strong></footer>
+  </div>
 
   <script>
     function formatRupiah(number) {
@@ -142,37 +128,40 @@
     }
 
     function hitung() {
-      let harga = parseFloat(document.getElementById('harga').value) || 0;
-      let diskon = parseFloat(document.getElementById('diskon').value) || 0;
-      let voucher = parseFloat(document.getElementById('voucher').value) || 0;
-      let admin_fee = parseFloat(document.getElementById('admin_fee').value) || 0;
-      let ongkir_fee = parseFloat(document.getElementById('ongkir_fee').value) || 0;
-      let promo_fee = parseFloat(document.getElementById('promo_fee').value) || 0;
+      const harga = parseFloat(document.getElementById('harga').value) || 0;
+      const diskon = parseFloat(document.getElementById('diskon').value) || 0;
+      const voucher = parseFloat(document.getElementById('voucher').value) || 0;
+      const admin_fee = parseFloat(document.getElementById('admin_fee').value) || 0;
+      const ongkir_fee = parseFloat(document.getElementById('ongkir_fee').value) || 0;
+      const promo_fee = parseFloat(document.getElementById('promo_fee').value) || 0;
+      const penanganan = parseFloat(document.getElementById('penanganan_fee').value) || 0;
 
-      let harga_final = harga - diskon - voucher;
-      if (harga_final < 0) harga_final = 0;
+      const harga_final = harga - diskon - voucher;
+      const admin = (admin_fee / 100) * harga_final;
+      const ongkir = (ongkir_fee / 100) * harga_final;
+      const promo = (promo_fee / 100) * harga_final;
 
-      let admin = (admin_fee / 100) * harga_final;
-      let ongkir = (ongkir_fee / 100) * harga_final;
-      let promo = (promo_fee / 100) * harga_final;
-
-      let total_biaya = admin + ongkir + promo;
-      let bersih = harga_final - total_biaya;
+      const total_biaya = admin + ongkir + promo + penanganan;
+      const bersih = harga_final - total_biaya;
 
       document.getElementById('harga_final').innerText = formatRupiah(harga_final);
       document.getElementById('admin_total').innerText = formatRupiah(admin);
-      document.getElementById('admin_percent').innerText = admin_fee + "%";
       document.getElementById('ongkir_total').innerText = formatRupiah(ongkir);
       document.getElementById('promo_total').innerText = formatRupiah(promo);
+      document.getElementById('penanganan_total').innerText = formatRupiah(penanganan);
       document.getElementById('total_biaya').innerText = formatRupiah(total_biaya);
       document.getElementById('bersih').innerText = formatRupiah(bersih);
-
-      document.getElementById('ringkasan').style.display = 'block';
     }
 
     function resetForm() {
-      document.getElementById('form-kalkulator').reset();
-      document.getElementById('ringkasan').style.display = 'none';
+      document.getElementById('harga').value = 0;
+      document.getElementById('diskon').value = 0;
+      document.getElementById('voucher').value = 0;
+      document.getElementById('admin_fee').value = 1.5;
+      document.getElementById('ongkir_fee').value = 5;
+      document.getElementById('promo_fee').value = 2;
+      document.getElementById('penanganan_fee').value = 1000;
+      document.querySelectorAll('.summary strong').forEach(el => el.innerText = 'Rp 0');
     }
   </script>
 </body>
